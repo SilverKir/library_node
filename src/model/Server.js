@@ -6,7 +6,7 @@ const userRouter = require("../controller/UserController");
 
 module.exports = start = ()=> {
    
-    app.listen(port,  ()=>console.log(`Server is running on port ${port}`))
+    app.listen(port, ()=>console.log(`Server is running on port ${port}`))
     app.use(express.json());
     app.use("/api/books", router);
     app.use("/api/user", userRouter);

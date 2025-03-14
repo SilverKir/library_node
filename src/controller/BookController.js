@@ -21,7 +21,6 @@ const store={
 
 
     router.post('/', (req, res) => {
-        console.log(req.body);
         const {title, description, authors, favorite, fileCover, fileName} = req.body;
         const book = new Book(title, description, authors, favorite, fileCover, fileName);
         store.books.push(book);
@@ -48,7 +47,7 @@ const store={
         const bookIndex = store.books.findIndex(b => b.id === req.params.id);
         if (bookIndex !== -1) {
             store.books.splice(bookIndex, 1);
-            res.sendStatus(204).body("OK");
+            res.send('OK');
         } else {
             res.status(404).send('Book not found');
         }
