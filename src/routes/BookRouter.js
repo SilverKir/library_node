@@ -2,6 +2,9 @@ const Book = require('../model/Book.js');
 const express = require('express');
 const router = express.Router();
 const bookFile = require('../middleware/BookFile');
+const fs = require('fs');
+const path = require('path');
+
 
 const store={
     books:[],
@@ -20,12 +23,18 @@ const store={
         }
     });
 
+    router.get('/:id/download', (req, res) => {
+        const book = store.books.find(b => b.id === req.params.id);
+        if (book && book.fileBook) {
+            const filePath = path.join(__dirname,'..', '..', 'public', 'books', book.fileBook);
+            res.download(filePath, book.title+'.'+book.fileBook.split('.')[1]);
+        } else {
+            res.status(404).send('Book not found');
+        }
+    });
 
     router.post('/', bookFile.single('bookFile'), (req, res) => {
-        const {title, description, authors, favorite, fileCover, fileName} = req.body;
-        console.log(req.headers['content-type'])
-        console.log(req.body);
-        console.log(req.file);
+        const {title, description, authors, favorite, fileCover, fileName} = req.body;   
         const book = new Book(title, description, authors, favorite, fileCover, fileName);
         if (req.file) {
             book.fileBook = req.file.filename;
@@ -53,9 +62,14 @@ const store={
         }
     });
 
+
     router.delete('/:id', (req, res) => {
         const bookIndex = store.books.findIndex(b => b.id === req.params.id);
         if (bookIndex !== -1) {
+            const book = store.books[bookIndex];
+            if (book.fileBook)
+            {fs.unlinkSync(path.join(__dirname,'..' ,'..', 'public', 'books', book.fileBook));}
+
             store.books.splice(bookIndex, 1);
             res.send('OK');
         } else {
