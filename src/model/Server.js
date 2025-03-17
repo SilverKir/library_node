@@ -1,8 +1,8 @@
 const express = require ("express");
 const app = express();
 const port = process.env.PORT||3000;
-const router = require("../controller/BookController");
-const userRouter = require("../controller/UserController");
+const router = require("../routes/BookRouter");
+const userRouter = require("../routes/UserRouter");
 
 module.exports = start = ()=> {
    
