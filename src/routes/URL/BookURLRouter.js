@@ -3,8 +3,25 @@ const express = require('express');
 const router = express.Router();
 const bookFile = require('../../middleware/BookFile.js');
 const BookRepository = require('../../repository/BookRepository.js');
+const deleteBookFile = require('../../controller/bookController.js');
 
 const store=new BookRepository();
+
+router.get('/create', (req, res) => {
+    res.render('../src/views/book/create', { title: 'Book | create', book: new Book(), });
+});
+
+router.post('/create', bookFile.single('bookFile'), (req, res) => {
+    const {title, description, authors, favorite, fileCover, fileName} = req.body;
+    const book = new Book(title, description, authors, favorite, fileCover, fileName);
+    if (req.file) {
+        book.fileBook = req.file.filename;
+    }
+    store.addBook(book);
+
+    res.redirect('/');
+});
+
 
 router.get('/', (req, res) => {
     const books=store.getAll();
@@ -40,10 +57,23 @@ router.post('/update/:id', bookFile.single('bookFile'),  (req, res) => {
         book.favorite = favorite;
         book.fileCover = fileCover;
         book.fileName = fileName;
+
         if (req.file) {
+            deleteBookFile.deleteBookFile(book);
             book.fileBook = req.file.filename;
         }
         store.updateBook(req.params.id, book);
+        res.redirect('/url/books');
+    } else {
+        res.status(404).send('Book not found');
+    }
+});
+
+router.post('/delete/:id', (req, res) => {
+    const book = store.getBookById(req.params.id);
+    if (book) {
+        deleteBookFile.deleteBookFile(book);
+        store.deleteBook(req.params.id);
         res.redirect('/url/books');
     } else {
         res.status(404).send('Book not found');

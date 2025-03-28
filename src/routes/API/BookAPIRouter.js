@@ -2,9 +2,8 @@ const Book = require('../../model/Book.js');
 const express = require('express');
 const router = express.Router();
 const bookFile = require('../../middleware/BookFile.js');
-const fs = require('fs');
-const path = require('path');
 const BookRepository = require('../../repository/BookRepository.js');
+const deleteBookFile = require('../../controller/bookController.js');
 
 const store = new BookRepository();
 
@@ -67,9 +66,7 @@ const store = new BookRepository();
     router.delete('/:id', (req, res) => {
         const book = store.getBookById(req.params.id);  
         if (book) {
-            if (book.fileBook)
-            {fs.unlinkSync(path.join(__dirname,'..' ,'..', 'public', 'books', book.fileBook));}
-
+            deleteBookFile.deleteBookFile(book);
             store.deleteBook(req.params.id);
             res.send('OK');
         } else {

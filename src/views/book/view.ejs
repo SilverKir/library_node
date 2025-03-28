@@ -24,7 +24,7 @@ include('../port/menu.ejs') %>
     <a class="btn btn-sm btn-primary" href="/url/books/update/<%= book.id %>">
       <i class="fa fa-pencil" aria-hidden="true"></i>
     </a>
-    <form action="/url/delete/<%= book.id %>" method="POST" class="d-inline">
+    <form action="/url/books/delete/<%= book.id %>" method="POST" class="d-inline">
       <button class="btn btn-sm btn-danger">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>

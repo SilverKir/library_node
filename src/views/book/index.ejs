@@ -27,7 +27,7 @@ include('../port/menu.ejs') %> <% if (books.length) { %>
           <i class="fa fa-pencil" aria-hidden="true"></i>
         </a>
         <form
-          action="/url/delete/<%= book.id %>"
+          action="/url/books/delete/<%= book.id %>"
           method="POST"
           class="d-inline"
         >
