@@ -1,21 +1,21 @@
-const Book = require('../model/Book.js');
+const Book = require('../../model/Book.js');
 const express = require('express');
 const router = express.Router();
-const bookFile = require('../middleware/BookFile');
+const bookFile = require('../../middleware/BookFile.js');
 const fs = require('fs');
 const path = require('path');
+const BookRepository = require('../../repository/BookRepository.js');
 
-
-const store={
-    books:[],
-};
+const store = new BookRepository();
 
     router.get('/', (req, res) => {
-        res.status(200).json(store.books);
+        const books=store.getAll();
+         res.status(200).json(books);
+
     });
     
     router.get('/:id', (req, res) => {
-        const book = store.books.find(b => b.id === req.params.id);
+        const book = store.getBookById(req.params.id);
         if (book) {
             res.json(book);
         } else {
@@ -24,9 +24,9 @@ const store={
     });
 
     router.get('/:id/download', (req, res) => {
-        const book = store.books.find(b => b.id === req.params.id);
+        const book = store.getBookById(req.params.id);
         if (book && book.fileBook) {
-            const filePath = path.join(__dirname,'..', '..', 'public', 'books', book.fileBook);
+            const filePath = path.join(__dirname,'..','..', '..', 'public', 'books', book.fileBook);
             res.download(filePath, book.title+'.'+book.fileBook.split('.')[1]);
         } else {
             res.status(404).send('Book not found');
@@ -39,13 +39,13 @@ const store={
         if (req.file) {
             book.fileBook = req.file.filename;
         }
-        store.books.push(book);
+        store.addBook(book);
         res.status(201).json(book);
     });
 
     router.put('/:id', bookFile.single('bookFile'), (req, res) => {
         const {title, description, authors, favorite, fileCover, fileName} = req.body;
-        const book = store.books.find(b => b.id === req.params.id);
+        const book = store.getBookById(req.params.id);  
         if (book) {
             book.title = title;
             book.description = description;
@@ -56,6 +56,7 @@ const store={
             if (req.file) {
                 book.fileBook = req.file.filename;
             }
+            store.updateBook(req.params.id, book);
             res.json(book);
         } else {
             res.status(404).send('Book not found');
@@ -64,13 +65,12 @@ const store={
 
 
     router.delete('/:id', (req, res) => {
-        const bookIndex = store.books.findIndex(b => b.id === req.params.id);
-        if (bookIndex !== -1) {
-            const book = store.books[bookIndex];
+        const book = store.getBookById(req.params.id);  
+        if (book) {
             if (book.fileBook)
             {fs.unlinkSync(path.join(__dirname,'..' ,'..', 'public', 'books', book.fileBook));}
 
-            store.books.splice(bookIndex, 1);
+            store.deleteBook(req.params.id);
             res.send('OK');
         } else {
             res.status(404).send('Book not found');

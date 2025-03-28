@@ -1,0 +1,86 @@
+<form method="POST" enctype="multipart/form-data">
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputTitle">Title</label>
+      <input
+        type="text"
+        name="title"
+        class="form-control"
+        id="inputTitle"
+        placeholder="Book title"
+        value="<%= book.title %>"
+      />
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputAuthors">Authors</label>
+      <input
+        type="text"
+        name="authors"
+        class="form-control"
+        id="inputAuthors"
+        placeholder="Book Authors"
+        value="<%= book.authors %>"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputDescription">Description</label>
+    <input
+      type="text"
+      name="description"
+      class="form-control"
+      id="inputDescription"
+      placeholder="Book description"
+      value="<%= book.description %>"
+    />
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="inputFavorite">Favorite</label>
+      <input
+        type="text"
+        name="favorite"
+        class="form-control"
+        id="inputFavorite"
+        value="<%= book.favorite %>"
+      />
+    </div>
+
+    <div class="form-group col-md-4">
+      <label for="inputFileCover">fileCover</label>
+      <input
+        type="text"
+        name="fileCover"
+        class="form-control"
+        id="inputFileCover"
+        value="<%= book.fileCover %>"
+      />
+    </div>
+
+    <div class="form-group col-md-4">
+      <label for="inputFileName">fileName</label>
+      <input
+        type="text"
+        name="fileName"
+        class="form-control"
+        id="inputFileName"
+        value="<%= book.fileName %>"
+      />
+    </div>
+  </div>
+
+  <div class="custom-file">
+    <input
+      type="file"
+      class="custom-file-input"
+      id="customFile"
+      name="bookFile"
+    />
+    <label class="custom-file-label" for="customFile"
+      ><%= book.fileBook %></label
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update</button>
+</form>
