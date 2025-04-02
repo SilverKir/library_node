@@ -4,6 +4,7 @@ const router = express.Router();
 const bookFile = require('../../middleware/BookFile.js');
 const BookRepository = require('../../repository/BookRepository.js');
 const deleteBookFile = require('../../controller/bookController.js');
+const path = require('path');
 
 const store = new BookRepository();
 
