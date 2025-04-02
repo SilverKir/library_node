@@ -4,6 +4,7 @@ const router = express.Router();
 const bookFile = require('../../middleware/BookFile.js');
 const BookRepository = require('../../repository/BookRepository.js');
 const deleteBookFile = require('../../controller/bookController.js');
+const counter = require('../../controller/counter.js');
 
 const store=new BookRepository();
 
@@ -28,10 +29,12 @@ router.get('/', (req, res) => {
     res.render('../src/views/book/index', { title: 'Books', books: books, });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async(req, res) => {
     const book = store.getBookById(req.params.id);
     if (book) {
-        res.render('../src/views/book/view', { title: 'Book | view', book: book, });
+       counter.setCounter(req.params.id)
+       const count = await counter.getCount(req.params.id);
+        res.render('../src/views/book/view', { title: 'Book | view', book: book, count: count, });
     } else {
         res.status(404).send('Book not found');
     }

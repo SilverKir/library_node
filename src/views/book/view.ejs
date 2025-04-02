@@ -2,7 +2,7 @@
 include('../port/menu.ejs') %>
 
 <h2 class="mt 10"><%= title %></h2>
-
+<h4 class="mt 5">Number of views: <%= count.count %></h4>
 <div class="card" style="width: 18rem">
   <div class="card-body">
     <h5 class="card-title">Title: <%= book.title%></h5>
@@ -24,7 +24,11 @@ include('../port/menu.ejs') %>
     <a class="btn btn-sm btn-primary" href="/url/books/update/<%= book.id %>">
       <i class="fa fa-pencil" aria-hidden="true"></i>
     </a>
-    <form action="/url/books/delete/<%= book.id %>" method="POST" class="d-inline">
+    <form
+      action="/url/books/delete/<%= book.id %>"
+      method="POST"
+      class="d-inline"
+    >
       <button class="btn btn-sm btn-danger">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
