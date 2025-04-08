@@ -8,23 +8,26 @@ const path = require('path');
 
 const store = new BookRepository();
 
-    router.get('/', (req, res) => {
-        const books=store.getAll();
-         res.status(200).json(books);
-
+    router.get('/', async (req, res) => {
+        try {
+            const books = await store.getAll();
+            res.status(200).json(books);
+        } catch (error) {
+            res.status(500).json(error);
+        }
     });
     
-    router.get('/:id', (req, res) => {
-        const book = store.getBookById(req.params.id);
-        if (book) {
+    router.get('/:id', async (req, res) => {
+       try {
+            const book = await store.getBookById(req.params.id);
             res.json(book);
-        } else {
-            res.status(404).send('Book not found');
+        } catch (error) {
+            res.status(404).json(error);;
         }
     });
 
-    router.get('/:id/download', (req, res) => {
-        const book = store.getBookById(req.params.id);
+    router.get('/:id/download', async (req, res) => {
+        const book = await store.getBookById(req.params.id);
         if (book && book.fileBook) {
             const filePath = path.join(__dirname,'..','..', '..', 'public', 'books', book.fileBook);
             res.download(filePath, book.title+'.'+book.fileBook.split('.')[1]);
@@ -33,19 +36,22 @@ const store = new BookRepository();
         }
     });
 
-    router.post('/', bookFile.single('bookFile'), (req, res) => {
+    router.post('/', bookFile.single('bookFile'), async (req, res) => {
         const {title, description, authors, favorite, fileCover, fileName} = req.body;   
         const book = new Book(title, description, authors, favorite, fileCover, fileName);
         if (req.file) {
             book.fileBook = req.file.filename;
         }
-        store.addBook(book);
+       try{await store.addBook(book);
         res.status(201).json(book);
+       } catch (error){
+            res.status(500).json(error);
+        }   
     });
 
-    router.put('/:id', bookFile.single('bookFile'), (req, res) => {
+    router.put('/:id', bookFile.single('bookFile'), async (req, res) => {
         const {title, description, authors, favorite, fileCover, fileName} = req.body;
-        const book = store.getBookById(req.params.id);  
+        const book = await store.getBookById(req.params.id);  
         if (book) {
             book.title = title;
             book.description = description;
@@ -56,7 +62,7 @@ const store = new BookRepository();
             if (req.file) {
                 book.fileBook = req.file.filename;
             }
-            store.updateBook(req.params.id, book);
+            await store.updateBook(req.params.id, book);
             res.json(book);
         } else {
             res.status(404).send('Book not found');
@@ -64,11 +70,11 @@ const store = new BookRepository();
     });
 
 
-    router.delete('/:id', (req, res) => {
-        const book = store.getBookById(req.params.id);  
+    router.delete('/:id', async (req, res) => {
+        const book = await store.getBookById(req.params.id);  
         if (book) {
             deleteBookFile.deleteBookFile(book);
-            store.deleteBook(req.params.id);
+            await store.deleteBook(req.params.id);
             res.send('OK');
         } else {
             res.status(404).send('Book not found');

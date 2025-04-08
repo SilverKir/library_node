@@ -12,25 +12,34 @@ router.get('/create', (req, res) => {
     res.render('../src/views/book/create', { title: 'Book | create', book: new Book(), });
 });
 
-router.post('/create', bookFile.single('bookFile'), (req, res) => {
+router.post('/create', bookFile.single('bookFile'), async (req, res) => {
     const {title, description, authors, favorite, fileCover, fileName} = req.body;
     const book = new Book(title, description, authors, favorite, fileCover, fileName);
     if (req.file) {
         book.fileBook = req.file.filename;
     }
-    store.addBook(book);
 
-    res.redirect('/');
+    try{
+        await store.addBook(book);
+         res.redirect('/');
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 
-router.get('/', (req, res) => {
-    const books=store.getAll();
+router.get('/', async (req, res) => {
+    try{
+    const books= await store.getAll();
     res.render('../src/views/book/index', { title: 'Books', books: books, });
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+    
 });
 
 router.get('/:id', async(req, res) => {
-    const book = store.getBookById(req.params.id);
+    const book = await store.getBookById(req.params.id);
     if (book) {
        counter.setCounter(req.params.id)
        const count = await counter.getCount(req.params.id);
@@ -40,19 +49,20 @@ router.get('/:id', async(req, res) => {
     }
 });
 
-router.get('/update/:id/', (req, res) => {
-    const book = store.getBookById(req.params.id);
-    if (book) {
+router.get('/update/:id/', async (req, res) => {
+    
+    try  {
+        const book = await store.getBookById(req.params.id);
         res.render('../src/views/book/update', { title: 'Book | edit', book: book, });
-    } else {
-        res.status(404).send('Book not found');
+    } catch (error) {
+        res.status(404).send(error);
     }
 });
 
-router.post('/update/:id', bookFile.single('bookFile'),  (req, res) => {
+router.post('/update/:id', bookFile.single('bookFile'),  async (req, res) => {
     
     const { title, description, authors, favorite, fileCover, fileName } = req.body;
-    const book = store.getBookById(req.params.id);
+    const book = await store.getBookById(req.params.id);
     if (book) {
         book.title = title;
         book.description = description;
@@ -65,18 +75,18 @@ router.post('/update/:id', bookFile.single('bookFile'),  (req, res) => {
             deleteBookFile.deleteBookFile(book);
             book.fileBook = req.file.filename;
         }
-        store.updateBook(req.params.id, book);
+        await store.updateBook(req.params.id, book);
         res.redirect('/url/books');
     } else {
         res.status(404).send('Book not found');
     }
 });
 
-router.post('/delete/:id', (req, res) => {
-    const book = store.getBookById(req.params.id);
+router.post('/delete/:id', async (req, res) => {
+    const book = await store.getBookById(req.params.id);
     if (book) {
         deleteBookFile.deleteBookFile(book);
-        store.deleteBook(req.params.id);
+        await store.deleteBook(req.params.id);
         res.redirect('/url/books');
     } else {
         res.status(404).send('Book not found');
