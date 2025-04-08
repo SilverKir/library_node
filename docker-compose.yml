@@ -12,6 +12,11 @@ services:
       - 3002:3002
     depends_on:
       - storage
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017
   library:
     image: silverkir/library:03.1.0
     environment:
@@ -19,7 +24,9 @@ services:
       - COUNTER_URL=http://counter:3002
       - DB_URL=mongodb://mongo:27017/library
     ports:
-      - 27017:27017
       - 80:3003
+    links: 
+      - mongo      
     depends_on:
       - counter
+      
