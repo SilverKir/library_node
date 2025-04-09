@@ -18,7 +18,7 @@ services:
     ports:
       - 27017:27017
   library:
-    image: silverkir/library:03.1.0
+    image: silverkir/library:03.1.1
     environment:
       - PORT=3003
       - COUNTER_URL=http://counter:3002

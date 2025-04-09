@@ -1,15 +1,8 @@
 const bookSchema = require("../model/bookSchema");
 
-let instanse = null;
-
 module.exports = class BookRepository {
   constructor() {
-    if (instanse) {
-      return instanse;
-    }
-    instanse = this;
     this.store = bookSchema;
-    return instanse;
   }
 
   async getAll() {
